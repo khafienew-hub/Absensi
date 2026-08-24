@@ -5,20 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Yayasan Yalal Wathon</title>
     
-    <!-- Pengaturan Mode Aplikasi / Layar Penuh -->
+    <!-- PWA Settings & Layar Penuh -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Yalal Wathon">
     <meta name="theme-color" content="#1a472a">
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
+    
+    <!-- App Icon / Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
@@ -41,15 +47,16 @@
             background-color: #ffffff;
         }
 
-        /* Memuat Website Yayasan */
+        /* Iframe Memuat Website */
         #main-frame {
             width: 100%;
             height: 100%;
             border: none;
             flex-grow: 1;
+            display: block;
         }
 
-        /* Splash Screen Saat Awal Buka */
+        /* Splash Screen */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -67,27 +74,47 @@
         }
 
         .logo-box {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
+            width: 85px;
+            height: 85px;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
+            font-size: 32px;
             font-weight: bold;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            animation: pulse 1.8s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .app-title {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .app-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 24px;
         }
 
         .loader-bar {
-            width: 150px;
+            width: 160px;
             height: 4px;
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
             overflow: hidden;
             position: relative;
-            margin-top: 15px;
         }
 
         .loader-progress {
@@ -96,7 +123,7 @@
             background-color: #68d391;
             position: absolute;
             left: -100%;
-            animation: loading 1.5s infinite ease-in-out;
+            animation: loading 1.4s infinite ease-in-out;
         }
 
         @keyframes loading {
@@ -111,18 +138,18 @@
     <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="logo-box">YW</div>
-        <div style="font-size: 18px; font-weight: 600;">Yayasan Yalal Wathon</div>
-        <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Memuat Halaman...</div>
+        <div class="app-title">Yayasan Yalal Wathon</div>
+        <div class="app-subtitle">Memuat Aplikasi...</div>
         <div class="loader-bar">
             <div class="loader-progress"></div>
         </div>
     </div>
 
-    <!-- Halaman Web Tertanam -->
+    <!-- Frame Website -->
     <div id="app-container">
         <iframe 
             id="main-frame" 
-            src="https://yayasanyalalwatho.my.id" 
+            src="https://yayasanyalalwathon.my.id" 
             allow="fullscreen; geolocation; camera; microphone">
         </iframe>
     </div>
@@ -138,11 +165,10 @@
             }, 500);
         }
 
-        // Hilangkan splash saat web selesai dimuat
         iframe.onload = closeSplash;
-        setTimeout(closeSplash, 3500); // Batas maksimal tunggu 3.5 detik
+        setTimeout(closeSplash, 3000);
 
-        // Service Worker untuk PWA
+        // Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -151,3 +177,4 @@
     </script>
 </body>
 </html>
+
