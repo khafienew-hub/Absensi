@@ -2,22 +2,17 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yayasan Yalal Wathon</title>
+    <!-- Memaksa resolusi viewport desktop lebar 1280px -->
+    <meta name="viewport" content="width=1280, initial-scale=0.3, user-scalable=yes">
+    <title>Yayasan Yalal Wathon - Desktop Mode</title>
     
     <!-- PWA Settings -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Yalal Wathon">
     <meta name="theme-color" content="#1a472a">
 
-    <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- App Icon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
 
     <style>
         * {
@@ -26,7 +21,38 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #1a472a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Container Desktop Memaksa Ukuran Lebar */
+        #desktop-wrapper {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0d2b17;
+        }
+
+        /* Frame dipatok minimum 1280px agar layout CSS responsive web tidak menciut ke mode HP */
+        #main-frame {
+            width: 100%;
+            height: 100%;
+            min-width: 1280px;
+            border: none;
+            background-color: #ffffff;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
             background: linear-gradient(135deg, #0d2b17, #1a472a, #2e6b43);
@@ -34,46 +60,29 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            z-index: 9999;
             color: #ffffff;
-            overflow: hidden;
-            text-align: center;
-            padding: 20px;
+            transition: opacity 0.5s ease;
         }
 
         .logo-box {
             width: 90px;
             height: 90px;
-            background-color: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 34px;
             font-weight: bold;
-            letter-spacing: 1px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             animation: pulse 1.8s infinite ease-in-out;
         }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
-        }
-
-        .title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .subtitle {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.75);
-            margin-bottom: 24px;
         }
 
         .loader-bar {
@@ -83,6 +92,7 @@
             border-radius: 4px;
             overflow: hidden;
             position: relative;
+            margin-top: 15px;
         }
 
         .loader-progress {
@@ -103,25 +113,43 @@
 </head>
 <body>
 
-    <div class="logo-box">YW</div>
-    <div class="title">Yayasan Yalal Wathon</div>
-    <div class="subtitle">Membuka Aplikasi...</div>
-    <div class="loader-bar">
-        <div class="loader-progress"></div>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="logo-box">YW</div>
+        <div style="font-size: 20px; font-weight: 600;">Yayasan Yalal Wathon</div>
+        <div style="font-size: 13px; opacity: 0.7; margin-top: 5px;">Memuat Mode Desktop...</div>
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+    </div>
+
+    <!-- Desktop Container -->
+    <div id="desktop-wrapper">
+        <iframe 
+            id="main-frame" 
+            src="https://yayasanyalalwathon.my.id">
+        </iframe>
     </div>
 
     <script>
-        const TARGET_URL = "https://yayasanyalalwathon.my.id";
+        const splash = document.getElementById('splash-screen');
+        const iframe = document.getElementById('main-frame');
 
-        // Register Service Worker untuk PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
+        function hideSplash() {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 500);
         }
 
-        // Langsung redirect ke web utama tanpa iframe
-        setTimeout(() => {
-            window.location.replace(TARGET_URL);
-        }, 600);
+        iframe.onload = hideSplash;
+        setTimeout(hideSplash, 3000);
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
     </script>
 </body>
 </html>
