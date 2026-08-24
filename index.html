@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Yayasan Yalal Wathon</title>
     
-    <!-- PWA Settings & Layar Penuh -->
+    <!-- PWA Settings -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- App Icon / Favicon -->
+    <!-- App Icon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
 
@@ -24,43 +24,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #1a472a;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        /* Tampilan Layar Penuh */
-        #app-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #ffffff;
-        }
-
-        /* Iframe Memuat Website */
-        #main-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            flex-grow: 1;
-            display: block;
-        }
-
-        /* Splash Screen */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
+        body {
             width: 100vw;
             height: 100vh;
             background: linear-gradient(135deg, #0d2b17, #1a472a, #2e6b43);
@@ -68,25 +34,27 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             color: #ffffff;
-            transition: opacity 0.5s ease;
+            overflow: hidden;
+            text-align: center;
+            padding: 20px;
         }
 
         .logo-box {
-            width: 85px;
-            height: 85px;
+            width: 90px;
+            height: 90px;
             background-color: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 22px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 34px;
             font-weight: bold;
             letter-spacing: 1px;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.25);
             animation: pulse 1.8s infinite ease-in-out;
         }
@@ -96,15 +64,15 @@
             50% { transform: scale(1.05); }
         }
 
-        .app-title {
-            font-size: 19px;
+        .title {
+            font-size: 20px;
             font-weight: 600;
             margin-bottom: 6px;
         }
 
-        .app-subtitle {
+        .subtitle {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.75);
             margin-bottom: 24px;
         }
 
@@ -123,7 +91,7 @@
             background-color: #68d391;
             position: absolute;
             left: -100%;
-            animation: loading 1.4s infinite ease-in-out;
+            animation: loading 1.2s infinite ease-in-out;
         }
 
         @keyframes loading {
@@ -135,46 +103,25 @@
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-        <div class="logo-box">YW</div>
-        <div class="app-title">Yayasan Yalal Wathon</div>
-        <div class="app-subtitle">Memuat Aplikasi...</div>
-        <div class="loader-bar">
-            <div class="loader-progress"></div>
-        </div>
-    </div>
-
-    <!-- Frame Website -->
-    <div id="app-container">
-        <iframe 
-            id="main-frame" 
-            src="https://yayasanyalalwathon.my.id" 
-            allow="fullscreen; geolocation; camera; microphone">
-        </iframe>
+    <div class="logo-box">YW</div>
+    <div class="title">Yayasan Yalal Wathon</div>
+    <div class="subtitle">Membuka Aplikasi...</div>
+    <div class="loader-bar">
+        <div class="loader-progress"></div>
     </div>
 
     <script>
-        const iframe = document.getElementById('main-frame');
-        const splash = document.getElementById('splash-screen');
+        const TARGET_URL = "https://yayasanyalalwathon.my.id";
 
-        function closeSplash() {
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 500);
-        }
-
-        iframe.onload = closeSplash;
-        setTimeout(closeSplash, 3000);
-
-        // Service Worker
+        // Register Service Worker untuk PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
-            });
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
+
+        // Langsung redirect ke web utama tanpa iframe
+        setTimeout(() => {
+            window.location.replace(TARGET_URL);
+        }, 600);
     </script>
 </body>
 </html>
-
