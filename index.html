@@ -3,28 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yayasan Yalal Wathon App</title>
+    <title>Yayasan Yalal Wathon</title>
     
-    <!-- PWA Settings & Standalone Web App Meta Tags -->
+    <!-- Pengaturan Mode Aplikasi / Layar Penuh -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Yalal Wathon">
     <meta name="theme-color" content="#1a472a">
 
-    <!-- Web App Manifest Link -->
+    <!-- Web App Manifest -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- Favicon / App Icon (SVG Data URI) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a472a'/><text x='50%' y='55%' font-size='45' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>YW</text></svg>">
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         html, body {
@@ -32,10 +26,10 @@
             height: 100%;
             overflow: hidden;
             background-color: #1a472a;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
-        /* Container Fullscreen */
+        /* Tampilan Layar Penuh */
         #app-container {
             position: fixed;
             top: 0;
@@ -47,16 +41,15 @@
             background-color: #ffffff;
         }
 
-        /* Iframe untuk embed website */
+        /* Memuat Website Yayasan */
         #main-frame {
             width: 100%;
             height: 100%;
             border: none;
             flex-grow: 1;
-            display: block;
         }
 
-        /* Splash Screen & Loading Bar */
+        /* Splash Screen Saat Awal Buka */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -70,52 +63,31 @@
             align-items: center;
             z-index: 9999;
             color: #ffffff;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: opacity 0.5s ease;
         }
 
         .logo-box {
-            width: 90px;
-            height: 90px;
-            background-color: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 24px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 34px;
+            font-size: 30px;
             font-weight: bold;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-            animation: pulse 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .app-title {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .app-subtitle {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 30px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .loader-bar {
-            width: 180px;
+            width: 150px;
             height: 4px;
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
             overflow: hidden;
             position: relative;
+            margin-top: 15px;
         }
 
         .loader-progress {
@@ -124,7 +96,7 @@
             background-color: #68d391;
             position: absolute;
             left: -100%;
-            animation: loading 1.6s infinite ease-in-out;
+            animation: loading 1.5s infinite ease-in-out;
         }
 
         @keyframes loading {
@@ -132,97 +104,48 @@
             50% { left: 0%; }
             100% { left: 100%; }
         }
-
-        /* Tombol refresh/navigasi darurat (floating minimalis) */
-        .floating-controls {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            z-index: 1000;
-            display: flex;
-            gap: 10px;
-            opacity: 0.2;
-            transition: opacity 0.3s ease;
-        }
-
-        .floating-controls:hover, .floating-controls:active {
-            opacity: 1;
-        }
-
-        .btn-ctrl {
-            background-color: rgba(26, 71, 42, 0.85);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
     </style>
 </head>
 <body>
 
-    <!-- Splash Screen saat loading awal -->
+    <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="logo-box">YW</div>
-        <div class="app-title">Yayasan Yalal Wathon</div>
-        <div class="app-subtitle">Memuat Aplikasi...</div>
+        <div style="font-size: 18px; font-weight: 600;">Yayasan Yalal Wathon</div>
+        <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">Memuat Halaman...</div>
         <div class="loader-bar">
             <div class="loader-progress"></div>
         </div>
     </div>
 
-    <!-- Kontainer Aplikasi Fullscreen -->
+    <!-- Halaman Web Tertanam -->
     <div id="app-container">
         <iframe 
             id="main-frame" 
             src="https://yayasanyalalwatho.my.id" 
-            allow="fullscreen; geolocation; camera; microphone"
-            loading="eager">
+            allow="fullscreen; geolocation; camera; microphone">
         </iframe>
-    </div>
-
-    <!-- Quick Floating Action -->
-    <div class="floating-controls">
-        <button class="btn-ctrl" onclick="reloadApp()" title="Muat Ulang">↻</button>
     </div>
 
     <script>
         const iframe = document.getElementById('main-frame');
         const splash = document.getElementById('splash-screen');
 
-        function hideSplash() {
+        function closeSplash() {
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
             }, 500);
         }
 
-        // Hilangkan splash saat iframe selesai dimuat
-        iframe.onload = function() {
-            hideSplash();
-        };
+        // Hilangkan splash saat web selesai dimuat
+        iframe.onload = closeSplash;
+        setTimeout(closeSplash, 3500); // Batas maksimal tunggu 3.5 detik
 
-        // Fallback timeout jika iframe lambat merespons
-        setTimeout(hideSplash, 4000);
-
-        function reloadApp() {
-            splash.style.display = 'flex';
-            splash.style.opacity = '1';
-            iframe.src = iframe.src;
-        }
-
-        // Register Service Worker untuk dukungan PWA offline shell
+        // Service Worker untuk PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch((err) => {
-                    console.log('SW registration skipped/failed:', err);
-                });
+                navigator.serviceWorker.register('sw.js').catch(() => {});
             });
         }
     </script>
