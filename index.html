@@ -1,75 +1,313 @@
-{
-  "title": "Roadtrip Liburan Jakarta - Cirebon",
-  "timelineEvents": [
-    {
-      "id": "ev-001",
-      "timestamp": "2026-08-23T08:00:00Z",
-      "judul": "Keberangkatan Perjalanan",
-      "kategori": "Perjalanan",
-      "lokasi": "Jakarta Pusat",
-      "deskripsi": "Memulai perjalanan darat liburan.",
-      "lat": -6.2088,
-      "lng": 106.8456,
-      "tag": ["start", "roadtrip"]
-    },
-    {
-      "id": "ev-002",
-      "timestamp": "2026-08-23T08:45:00Z",
-      "judul": "Istirahat Rest Area KM 57",
-      "kategori": "Kuliner",
-      "lokasi": "Tol Jakarta-Cikampek KM 57",
-      "deskripsi": "Sarapan dan minum kopi sejenak.",
-      "lat": -6.3600,
-      "lng": 107.2800,
-      "tag": ["kopi", "restarea"]
-    },
-    {
-      "id": "ev-003",
-      "timestamp": "2026-08-23T11:00:00Z",
-      "judul": "Makan Siang Nasi Jamblang",
-      "kategori": "Kuliner",
-      "lokasi": "Cirebon, Jawa Barat",
-      "deskripsi": "Tiba di tujuan dan menikmati hidangan khas.",
-      "lat": -6.7063,
-      "lng": 108.5570,
-      "tag": ["kuliner", "cirebon"]
-    }
-  ],
-  "trackPoints": [
-    {
-      "timestamp": "2026-08-23T08:00:00Z",
-      "lat": -6.2088,
-      "lng": 106.8456,
-      "speed": 0.0,
-      "elevation": 12
-    },
-    {
-      "timestamp": "2026-08-23T08:20:00Z",
-      "lat": -6.2800,
-      "lng": 107.0000,
-      "speed": 75.5,
-      "elevation": 25
-    },
-    {
-      "timestamp": "2026-08-23T08:45:00Z",
-      "lat": -6.3600,
-      "lng": 107.2800,
-      "speed": 0.0,
-      "elevation": 35
-    },
-    {
-      "timestamp": "2026-08-23T09:30:00Z",
-      "lat": -6.5500,
-      "lng": 107.8200,
-      "speed": 92.0,
-      "elevation": 80
-    },
-    {
-      "timestamp": "2026-08-23T11:00:00Z",
-      "lat": -6.7063,
-      "lng": 108.5570,
-      "speed": 15.0,
-      "elevation": 10
-    }
-  ]
-}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roadtrip Jakarta - Cirebon Tracker</title>
+    <!-- Pustaka Peta Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        :root {
+            --primary: #1a472a;
+            --accent: #2e6b43;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0d2b17, #1a472a);
+            color: white;
+            padding: 20px 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 868px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            background-color: #fafbfc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #map {
+            width: 100%;
+            min-height: 480px;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .timeline-container {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 520px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 24px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 6px;
+            bottom: -24px;
+            width: 2px;
+            background-color: #e2e8f0;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            border: 3px solid #ffffff;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .time-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .item-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .item-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .tags-wrapper {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag-pill {
+            font-size: 0.7rem;
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="app-title">Roadtrip Tracking</h1>
+        <p>Live Dashboard & Rute Perjalanan</p>
+    </header>
+
+    <div class="container">
+        <!-- Peta Interaktif -->
+        <div class="card">
+            <div class="card-header">
+                <span>Rute & Track GPS</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Interactive Map</span>
+            </div>
+            <div id="map"></div>
+        </div>
+
+        <!-- Linimasa Kejadian -->
+        <div class="card">
+            <div class="card-header">
+                <span>Linimasa Perjalanan</span>
+                <span id="event-count" style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);"></span>
+            </div>
+            <div class="timeline-container" id="timeline-list"></div>
+        </div>
+    </div>
+
+    <!-- Pustaka Peta Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        // Data Roadtrip disematkan langsung
+        const roadtripData = {
+            "title": "Roadtrip Liburan Jakarta - Cirebon",
+            "timelineEvents": [
+                {
+                    "id": "ev-001",
+                    "timestamp": "2026-08-23T08:00:00Z",
+                    "judul": "Keberangkatan Perjalanan",
+                    "kategori": "Perjalanan",
+                    "lokasi": "Jakarta Pusat",
+                    "deskripsi": "Memulai perjalanan darat liburan.",
+                    "lat": -6.2088,
+                    "lng": 106.8456,
+                    "tag": ["start", "roadtrip"]
+                },
+                {
+                    "id": "ev-002",
+                    "timestamp": "2026-08-23T08:45:00Z",
+                    "judul": "Istirahat Rest Area KM 57",
+                    "kategori": "Kuliner",
+                    "lokasi": "Tol Jakarta-Cikampek KM 57",
+                    "deskripsi": "Sarapan dan minum kopi sejenak.",
+                    "lat": -6.3600,
+                    "lng": 107.2800,
+                    "tag": ["kopi", "restarea"]
+                },
+                {
+                    "id": "ev-003",
+                    "timestamp": "2026-08-23T11:00:00Z",
+                    "judul": "Makan Siang Nasi Jamblang",
+                    "kategori": "Kuliner",
+                    "lokasi": "Cirebon, Jawa Barat",
+                    "deskripsi": "Tiba di tujuan dan menikmati hidangan khas.",
+                    "lat": -6.7063,
+                    "lng": 108.5570,
+                    "tag": ["kuliner", "cirebon"]
+                }
+            ],
+            "trackPoints": [
+                { "timestamp": "2026-08-23T08:00:00Z", "lat": -6.2088, "lng": 106.8456, "speed": 0.0, "elevation": 12 },
+                { "timestamp": "2026-08-23T08:20:00Z", "lat": -6.2800, "lng": 107.0000, "speed": 75.5, "elevation": 25 },
+                { "timestamp": "2026-08-23T08:45:00Z", "lat": -6.3600, "lng": 107.2800, "speed": 0.0, "elevation": 35 },
+                { "timestamp": "2026-08-23T09:30:00Z", "lat": -6.5500, "lng": 107.8200, "speed": 92.0, "elevation": 80 },
+                { "timestamp": "2026-08-23T11:00:00Z", "lat": -6.7063, "lng": 108.5570, "speed": 15.0, "elevation": 10 }
+            ]
+        };
+
+        // Render Title & Counter
+        document.getElementById('app-title').innerText = roadtripData.title;
+        document.getElementById('event-count').innerText = `${roadtripData.timelineEvents.length} Titik Kunjungan`;
+
+        // Render Timeline
+        const timelineList = document.getElementById('timeline-list');
+        roadtripData.timelineEvents.forEach(item => {
+            const timeFormatted = new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const itemEl = document.createElement('div');
+            itemEl.className = 'timeline-item';
+            
+            const tagsHtml = item.tag ? item.tag.map(t => `<span class="tag-pill">#${t}</span>`).join('') : '';
+
+            itemEl.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="time-badge">${timeFormatted} WIB • ${item.kategori}</div>
+                <div class="item-title">${item.judul}</div>
+                <div class="item-desc">${item.lokasi} — ${item.deskripsi}</div>
+                <div class="tags-wrapper">${tagsHtml}</div>
+            `;
+            timelineList.appendChild(itemEl);
+        });
+
+        // Inisialisasi Peta
+        const map = L.map('map').setView([-6.45, 107.7], 9);
+
+        // Tile layer OpenStreetMap (gratis & tanpa API Key)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Gambar Jalur Rute (Polyline)
+        const latLngs = roadtripData.trackPoints.map(p => [p.lat, p.lng]);
+        const polyline = L.polyline(latLngs, {
+            color: '#1a472a',
+            weight: 5,
+            opacity: 0.85,
+            smoothFactor: 1
+        }).addTo(map);
+
+        // Pasang Pin/Marker di setiap lokasi kunjungan
+        roadtripData.timelineEvents.forEach(ev => {
+            const marker = L.marker([ev.lat, ev.lng]).addTo(map);
+            marker.bindPopup(`
+                <div style="font-size: 13px;">
+                    <b style="color: #1a472a;">${ev.judul}</b><br/>
+                    <small>${ev.lokasi}</small><br/>
+                    <p style="margin-top: 4px;">${ev.deskripsi}</p>
+                </div>
+            `);
+        });
+
+        // Auto Zoom ke batas seluruh koordinat rute
+        map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+    </script>
+</body>
+</html>
+
